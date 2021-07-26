@@ -1,0 +1,397 @@
+from tkinter import *
+from tkinter.messagebox import *
+import matplotlib.pyplot as plt
+from PIL import ImageTk,Image
+import mysql.connector as mysql
+#from tkinter.ttk import *
+
+def f1():
+	main_window.withdraw()
+	add_window.deiconify()
+
+def f2():
+	add_window.withdraw()
+	main_window.deiconify()
+	
+def f3():
+	try:
+		name = add_window_ent_rno.get()
+		if not name.isalpha() or len(name) < 2:
+			raise Exception("enter valid name")
+		
+		vid = int(add_window_ent_name.get())
+		if vid <= 0 :
+			raise Exception("enter valid Voter ID")
+
+		adno = int(add_window_ent_mrks.get())
+		if adno <= 1000000000 or adno >= 9999999999 : 
+			raise Exception("enter valid Adhar No shud be 10 digits")
+
+		city = add_window_ent_city.get()
+		if not name.isalpha() or len(name) < 2:
+			raise Exception("enter valid City name")
+			
+	except (IndexError, ValueError):
+		showerror("fail", "invalid info")
+		#con.rollback()
+		add_window_ent_rno.delete(0, END)
+		add_window_ent_name.delete(0, END)
+		add_window_ent_mrks.delete(0, END)
+		add_window_ent_city.delete(0, END)
+		add_window_ent_rno.focus()
+
+	except Exception as e:
+		showerror("issue", e)
+		#con.rollback()
+		add_window_ent_rno.delete(0, END)
+		add_window_ent_name.delete(0, END)
+		add_window_ent_mrks.delete(0, END)
+		add_window_ent_city.delete(0, END)
+		add_window_ent_rno.focus()
+
+	
+	else:
+		showinfo("info", "You can go and give your vote now")
+		add_window.withdraw()
+		sms_window.deiconify()
+		add_window_ent_rno.delete(0, END)
+		add_window_ent_name.delete(0, END)
+		add_window_ent_mrks.delete(0, END)
+		add_window_ent_city.delete(0, END)
+		add_window_ent_rno.focus()
+
+def f4():
+
+	mydb = mysql.connect(host = "localhost", user = "root",passwd="abc123",database="vote")
+	mycursor = mydb.cursor()
+	urvote = str(vote.get())
+	
+	
+	#d = [votz]
+	BJP, CONG, SENA, NCP, MNS, OTHER = 0,0,0,0,0,0
+
+	if urvote == "BJP":
+		showinfo("BMI", "You have voted for BJP")
+		votz=0
+		#mycursor.execute("insert into votee values('BJP',votz)")
+		#mycursor.execute("commit");
+
+		mycursor.execute("update votee set votz=votz+1 where name='BJP'")
+		mycursor.execute("commit");
+
+		#return BJP
+		
+	elif urvote == "CONG":
+		showinfo("BMI", "You have voted for CONG")
+		votz=0
+		#mycursor.execute("insert into votee values('CONG',votz)")
+		#mycursor.execute("commit");
+		
+		mycursor.execute("update votee set votz=votz+1 where name='CONG'")
+		mycursor.execute("commit");
+
+
+	elif urvote == "SENA":
+		showinfo("BMI", "You have voted for SENA")
+		votz=0
+		#mycursor.execute("insert into votee values('SENA',votz)")
+		#mycursor.execute("commit");
+
+		mycursor.execute("update votee set votz=votz+1 where name='SENA'")
+		mycursor.execute("commit");
+		
+	elif urvote == "NCP":
+		showinfo("BMI", "You have voted for NCP")
+		votz=0
+		#mycursor.execute("insert into votee values('NCP',votz)")
+		#mycursor.execute("commit");
+
+		mycursor.execute("update votee set votz=votz+1 where name='NCP'")
+		mycursor.execute("commit");
+		
+	elif urvote == "MNS":
+		showinfo("BMI", "You have voted for MNS")
+		votz=0
+		#mycursor.execute("insert into votee values('MNS',votz)")
+		#mycursor.execute("commit");
+	
+		mycursor.execute("update votee set votz=votz+1 where name='MNS'")
+		mycursor.execute("commit");
+	
+	elif urvote == "OTHER":
+		showinfo("BMI", "You have  voted for OTHER")
+		votz=0
+		#mycursor.execute("insert into votee values('OTHER',votz)")
+		#mycursor.execute("commit");
+
+		mycursor.execute("update votee set votz=votz+1 where name='OTHER'")
+		mycursor.execute("commit");
+
+	else :
+		showinfo("BMI", "You have not voted any one")
+		
+	sms_window.withdraw()
+	main_window.deiconify()
+
+	vote.set(NONE)
+
+		
+	if mydb is not None:
+		mydb.close()
+
+
+
+
+def f5():
+	main_window.withdraw()
+	view_window.deiconify()
+
+
+def f6():
+	view_window.withdraw()
+	main_window.deiconify()
+
+def f14():
+	
+	info = ""
+	mydb = None
+	try:
+		mydb = mysql.connect(host="localhost", user="root",passwd="abc123",database="vote")
+		mycursor = mydb.cursor()
+		mycursor.execute("select * from votee")
+		
+		data = mycursor.fetchall()
+
+		name = []
+		votz = []	
+
+		for column in data:
+			name.append(column[0])
+			votz.append(column[1])
+	
+		plt.bar(name, votz)
+		plt.bar(name, votz, color=['red', 'green', 'orange', 'green', 'blue', 'gray', 'black'])
+		plt.title("VOTING ANALYSIS")
+
+		plt.ylabel("Votes")	
+
+		plt.show()
+
+	except Exception as e:
+		showerror("Issue",e)
+		
+
+	finally:
+		if mydb is not None:
+			mydb.close()
+      
+	
+main_window = Tk()
+main_window.title("S.M.S")
+main_window.geometry("800x1200+400+150")
+load = Image.open('par.jpg')
+render = ImageTk.PhotoImage(load)
+img = Label(main_window, image=render)
+img.place(x=0, y=0)
+
+f = ('Calibri', 18, 'bold')
+f0 = ('Calibri', 12, 'bold')
+
+main_window_govote_btn = Button(main_window, text="VOTE", width=10, font=f, command=f1)
+main_window_view_btn = Button(main_window, text="View", width=10, font=f, command=f5)
+main_window_charts_btn = Button(main_window, text="Charts", width=10, font=f, command=f14)
+main_window_lbl_name = Label(main_window, fg="yellow", bg="red", text="Voting System By SAHIL SHINDE", font=f)
+
+main_window_govote_btn.pack(pady=30)
+main_window_view_btn.pack(pady=30)
+main_window_charts_btn.pack(pady=30)
+main_window.configure(background = "light pink")
+main_window_lbl_name.place(x=50, y=500)
+
+
+add_window = Toplevel(main_window)
+add_window.title("Add St.")
+add_window.geometry("800x1200+400+100")
+
+sah = Image.open('bag.jpg')
+render1 = ImageTk.PhotoImage(sah)
+img1 = Label(add_window, image=render1)
+img1.place(x=0, y=0)
+
+add_window_lbl_rno = Label(add_window, text="ENTER YOUR NAME:", font=f)
+add_window_ent_rno = Entry(add_window, bd=5, font=f)
+add_window_lbl_name = Label(add_window, text="ENTER YOUR VOTER ID NO:", font=f)
+add_window_ent_name = Entry(add_window, bd=5, font=f)
+add_window_lbl_mrks = Label(add_window, text="ENTER YOUR ADHARCARD NO:", font=f)
+add_window_ent_mrks = Entry(add_window, bd=5, font=f)
+add_window_lbl_city = Label(add_window, text="ENTER YOUR CITY NAME:", font=f)
+add_window_ent_city = Entry(add_window, bd=5, font=f)
+add_window_save_btn = Button(add_window, text="Save", font=f, command=f3)
+add_window_back_btn = Button(add_window, text="Back", font=f, command=f2)
+
+add_window_lbl_rno.configure(background = "light blue")
+add_window_lbl_name.configure(background = "light blue")
+add_window_lbl_mrks.configure(background = "light blue") 
+add_window_lbl_city.configure(background = "light blue") 
+
+add_window.configure(background = "light blue")
+
+add_window_lbl_rno.pack(pady=15)
+add_window_ent_rno.pack(pady=15)
+add_window_lbl_name.pack(pady=15)
+add_window_ent_name.pack(pady=15)
+add_window_lbl_mrks.pack(pady=15)
+add_window_ent_mrks.pack(pady=15)
+add_window_lbl_city.pack(pady=15)
+add_window_ent_city.pack(pady=15)
+add_window_save_btn.pack(pady=10)
+add_window_back_btn.pack(pady=10)
+
+
+add_window.withdraw()
+
+
+sms_window = Toplevel(add_window)
+sms_window.title("S.M.S")
+sms_window.geometry("800x1200+400+150")
+
+f = ('Calibri', 36, 'bold')
+f0 = ('Calibri', 60, 'bold')
+f1 = ('Calibri', 24, 'bold')
+
+sms_window.configure(background = "light green")
+#fram = Frame(sms_window, background="light green")
+
+canvas1 = Canvas(sms_window, width = 90, height = 85)
+img1 = ImageTk.PhotoImage(Image.open("bjp.png"))
+canvas1.create_image(20, 20, anchor=NW, image=img1)
+canvas1.place(x=200, y=90)
+canvas1.configure(background = "light green")
+
+canvas2 = Canvas(sms_window, width = 90, height = 85)
+img2 = ImageTk.PhotoImage(Image.open("cong.png"))
+canvas2.create_image(20, 20, anchor=NW, image=img2)
+canvas2.place(x=200, y=180)
+canvas2.configure(background = "light green")
+
+canvas3 = Canvas(sms_window, width = 90, height = 85)
+img3 = ImageTk.PhotoImage(Image.open("ss.png"))
+canvas3.create_image(20, 20, anchor=NW, image=img3)
+canvas3.place(x=200, y=270)
+canvas3.configure(background = "light green")
+
+canvas4 = Canvas(sms_window, width = 90, height = 80)
+img4 = ImageTk.PhotoImage(Image.open("ncp.jpg"))
+canvas4.create_image(9, 15, anchor=NW, image=img4)
+canvas4.place(x=200, y=360)
+canvas4.configure(background = "light green")
+
+canvas5 = Canvas(sms_window, width = 110, height = 80)
+img5 = ImageTk.PhotoImage(Image.open("mnss.jpg"))
+canvas5.create_image(10, 9, anchor=NW, image=img5)
+canvas5.place(x=200, y=445)
+canvas5.configure(background = "light green")
+
+
+canvas6 = Canvas(sms_window, width = 90, height = 80)
+img6 = ImageTk.PhotoImage(Image.open("oth.png"))
+canvas6.create_image(13, 9, anchor=NW, image=img6)
+canvas6.place(x=200, y=530)
+canvas6.configure(background = "light green")
+
+#framel0 = frame(sms_window, highlightbackground='black', highlightthickness=3)
+#framel0.pack(pady=5)
+
+vote = StringVar()
+vote.set(NONE)
+
+sms_window_lbl_evm = Label(sms_window, text="EVM", font=f0)
+sms_window_vote_bjp= Radiobutton(sms_window, text="BJP", font=f, variable=vote, value="BJP")
+sms_window_vote_cong = Radiobutton(sms_window, text="CONG", font=f, variable=vote, value="CONG")
+sms_window_vote_ss = Radiobutton(sms_window, text="SENA", font=f, variable=vote, value="SENA")
+sms_window_vote_ncp = Radiobutton(sms_window, text="NCP", font=f, variable=vote, value="NCP")
+sms_window_vote_mnsp = Radiobutton(sms_window, text="MNS", font=f, variable=vote, value="MNS")
+sms_window_vote_oth = Radiobutton(sms_window, text="OTHERS", font=f, variable=vote, value="OTHER")
+sms_window_vote_btn = Button(sms_window, text="VOTE", width=10, font=f1, command=f4)
+
+sms_window_lbl_evm.configure(background = "light green")
+ 
+#fram.pack()
+  
+sms_window_vote_bjp.configure(background = "light green")
+sms_window_vote_cong.configure(background = "light green")
+sms_window_vote_ss.configure(background = "light green")
+sms_window_vote_ncp.configure(background = "light green")
+sms_window_vote_mnsp.configure(background = "light green")
+sms_window_vote_oth.configure(background = "light green")
+sms_window_vote_btn.configure(background = "red")
+
+sms_window_lbl_evm.place(x=320, y=3)
+sms_window_vote_bjp.place(x=470, y=90)
+sms_window_vote_cong.place(x=470, y=180)
+sms_window_vote_ss.place(x=470, y=270)
+sms_window_vote_ncp.place(x=470, y=360)
+sms_window_vote_mnsp.place(x=470, y=440)
+sms_window_vote_oth.place(x=470, y=530)
+sms_window_vote_btn.place(x=300, y =620)
+
+sms_window.withdraw()
+
+view_window = Toplevel(main_window)
+view_window.title("Add St.")
+view_window.geometry("800x1200+400+100")
+
+info = ""
+mydb = None
+
+mydb = mysql.connect(host="localhost", user="root",passwd="abc123",database="vote")
+mycursor = mydb.cursor()
+#mycursor.execute("select * from votee")
+
+#data = mycursor.fetchall()
+#result = mycursor.fetchall()
+
+#for d in data:
+	#info = info + " name = " + str(d[0]) + " votz = "+str(d[1]) + "\n"
+#view_window_scr_data.insert(INSERT, info)
+
+mycursor.execute("SELECT * FROM votee")
+data = mycursor.fetchall()
+for d in data:
+	#print(row)
+		
+	view_window_lbl_bjp = Label(view_window, text="BJP :" + str(d[1])  , font=f)
+	view_window_lbl_cong = Label(view_window, text="CONG :" + str(d[1]), font=f)
+	view_window_lbl_ss = Label(view_window, text="SENA :" + str(d[1]) , font=f)
+	view_window_lbl_ncp = Label(view_window, text="NCP :" + str(d[1]) , font=f)
+	view_window_lbl_mns = Label(view_window, text="MNS : 8 " , font=f)
+	view_window_lbl_oth = Label(view_window, text="OTHERS :" + str(d[1]), font=f)
+
+#view_window_save_btn = Button(view_window, text="Save", font=f, command=f2)
+view_window_back_btn = Button(view_window, text="Back", font=f, command=f6)
+
+
+view_window.configure(background = "light blue")
+
+view_window_lbl_bjp.configure(background = "light blue")
+view_window_lbl_cong.configure(background = "light blue")
+view_window_lbl_ss.configure(background = "light blue")
+view_window_lbl_ncp.configure(background = "light blue")
+view_window_lbl_mns.configure(background = "light blue")
+view_window_lbl_oth.configure(background = "light blue")
+
+view_window_lbl_bjp.pack(pady=10)
+view_window_lbl_cong.pack(pady=10)
+view_window_lbl_ss.pack(pady=10)
+view_window_lbl_ncp.pack(pady=10)
+view_window_lbl_mns.pack(pady=10)
+view_window_lbl_oth.pack(pady=10)
+
+#view_window_save_btn.pack(pady=10)
+view_window_back_btn.pack(pady=10)
+
+view_window.withdraw()
+
+main_window.mainloop()
+
+
