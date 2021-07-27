@@ -346,49 +346,25 @@ mydb = None
 
 mydb = mysql.connect(host="localhost", user="root",passwd="abc123",database="vote")
 mycursor = mydb.cursor()
-#mycursor.execute("select * from votee")
-
-#data = mycursor.fetchall()
-#result = mycursor.fetchall()
-
-#for d in data:
-	#info = info + " name = " + str(d[0]) + " votz = "+str(d[1]) + "\n"
-#view_window_scr_data.insert(INSERT, info)
 
 mycursor.execute("SELECT * FROM votee")
 data = mycursor.fetchall()
-for d in data:
-	#print(row)
 		
-	view_window_lbl_bjp = Label(view_window, text="BJP :" + str(d[1])  , font=f)
-	view_window_lbl_cong = Label(view_window, text="CONG :" + str(d[1]), font=f)
-	view_window_lbl_ss = Label(view_window, text="SENA :" + str(d[1]) , font=f)
-	view_window_lbl_ncp = Label(view_window, text="NCP :" + str(d[1]) , font=f)
-	view_window_lbl_mns = Label(view_window, text="MNS : 8 " , font=f)
-	view_window_lbl_oth = Label(view_window, text="OTHERS :" + str(d[1]), font=f)
+for d in data:
+#print(row)
+	label= Label(view_window, text=d[0] + " : " + str(d[1]) , font=f)
+	#view_window.insert(INSERT, data)
+	label.configure(background = "light blue")
+	label.pack(pady=10)
 
-#view_window_save_btn = Button(view_window, text="Save", font=f, command=f2)
+
 view_window_back_btn = Button(view_window, text="Back", font=f, command=f6)
-
+#view_window_save_btn = Button(view_window, text="Save", font=f, command=f2)
 
 view_window.configure(background = "light blue")
 
-view_window_lbl_bjp.configure(background = "light blue")
-view_window_lbl_cong.configure(background = "light blue")
-view_window_lbl_ss.configure(background = "light blue")
-view_window_lbl_ncp.configure(background = "light blue")
-view_window_lbl_mns.configure(background = "light blue")
-view_window_lbl_oth.configure(background = "light blue")
-
-view_window_lbl_bjp.pack(pady=10)
-view_window_lbl_cong.pack(pady=10)
-view_window_lbl_ss.pack(pady=10)
-view_window_lbl_ncp.pack(pady=10)
-view_window_lbl_mns.pack(pady=10)
-view_window_lbl_oth.pack(pady=10)
-
-#view_window_save_btn.pack(pady=10)
 view_window_back_btn.pack(pady=10)
+#view_window_save_btn.pack(pady=10)
 
 view_window.withdraw()
 
