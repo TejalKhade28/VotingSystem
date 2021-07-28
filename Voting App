@@ -151,6 +151,15 @@ def f6():
 	view_window.withdraw()
 	main_window.deiconify()
 
+def f7():
+	main_window.withdraw()
+	root.deiconify()
+
+def f8():
+	root.withdraw()
+	main_window.deiconify()
+
+
 def f14():
 	
 	info = ""
@@ -197,14 +206,16 @@ img.place(x=0, y=0)
 f = ('Calibri', 18, 'bold')
 f0 = ('Calibri', 12, 'bold')
 
-main_window_govote_btn = Button(main_window, text="VOTE", width=10, font=f, command=f1)
-main_window_view_btn = Button(main_window, text="View", width=10, font=f, command=f5)
-main_window_charts_btn = Button(main_window, text="Charts", width=10, font=f, command=f14)
+main_window_govote_btn = Button(main_window, text="VOTE",fg="white", bg="black", width=10, font=f, command=f1)
+main_window_view_btn = Button(main_window, text="View",fg="white", bg="black", width=10, font=f, command=f5)
+main_window_charts_btn = Button(main_window, text="Charts",fg="white", bg="black", width=10, font=f, command=f14)
+main_window_feedback_btn = Button(main_window, text="Feedback",fg="white", bg="black", width=10, font=f, command=f7)
 main_window_lbl_name = Label(main_window, fg="yellow", bg="red", text="Voting System By SAHIL SHINDE", font=f)
 
 main_window_govote_btn.pack(pady=30)
 main_window_view_btn.pack(pady=30)
 main_window_charts_btn.pack(pady=30)
+main_window_feedback_btn.pack(pady=30)
 main_window.configure(background = "light pink")
 main_window_lbl_name.place(x=50, y=500)
 
@@ -352,22 +363,116 @@ data = mycursor.fetchall()
 		
 for d in data:
 #print(row)
-	label= Label(view_window, text=d[0] + " : " + str(d[1]) , font=f)
+	label= Label(view_window, text=d[0] + " : " + str(d[1]) ,fg="white", font=f)
 	#view_window.insert(INSERT, data)
-	label.configure(background = "light blue")
+	label.configure(background = "black")
 	label.pack(pady=10)
 
 
 view_window_back_btn = Button(view_window, text="Back", font=f, command=f6)
 #view_window_save_btn = Button(view_window, text="Save", font=f, command=f2)
 
-view_window.configure(background = "light blue")
+view_window.configure(background = "black")
 
 view_window_back_btn.pack(pady=10)
 #view_window_save_btn.pack(pady=10)
 
 view_window.withdraw()
 
+root=Toplevel(main_window)
+root.title("FeedBack")
+root.geometry("500x500+400+100")
+loadz=Image.open('background_image.jpg')
+renderz = ImageTk.PhotoImage(loadz)
+img=Label(root,image=renderz)
+img.place(x=0,y=0)
+
+
+
+def sel():	
+		
+	
+	try:
+		mydb = mysql.connect(host = "localhost", user = "root",passwd="abc123",database="vote")
+		mycursor = mydb.cursor()
+		
+		nam = name_entry.get()
+		if not nam.isalpha() or len(nam) < 2:
+			raise Exception("enter valid name")
+		
+		vid = int(voterid_entry.get())
+		if vid <= 0 :
+			raise Exception("enter valid Voter ID")
+
+		r=s.get()
+
+			
+	except (IndexError, ValueError):
+		showerror("fail", "invalid info")
+		#con.rollback()
+		name_entry.delete(0, END)
+		voterid_entry.delete(0, END)
+		name_entry.focus()
+
+	except Exception as e:
+		showerror("issue", e)
+		#con.rollback()
+		name_entry.delete(0, END)
+		voterid_entry.delete(0, END)
+		name_entry.focus()
+
+	
+	else:
+		
+		mycursor.execute("insert into feedback values('"+ nam +"','"+ str(vid) +"','"+ r +"')")
+		
+		mycursor.execute("commit");
+		
+		showinfo("info", "Thank You For Your Feedback ")
+		name_entry.delete(0,END)
+		voterid_entry.delete(0,END)
+		name_entry.focus()
+		s.set("BEST")
+		
+		
+		
+	finally:
+		if mydb is not None:
+			mydb.close()
+
+
+
+	
+s=StringVar()
+s.set("BEST")
+
+
+name=Label(root,text="Name",fg="white",font=("arial",18,"bold"))
+name_entry=Entry(root,bd=2,font=("arial",18,"bold"))
+voterid=Label(root,text="Voter Id",fg="white",font=("arial",18,"bold"))
+voterid_entry=Entry(root,bd=2,font=("arial",18,"bold"))
+radio1= Radiobutton(root,text="BEST",font=("arial",18,"bold"),variable=s,value="BEST")
+radio2= Radiobutton(root,text="GOOD",font=("arial",18,"bold"),variable=s,value="GOOD")
+radio3= Radiobutton(root,text="BAD",font=("arial",18,"bold"),variable=s,value="BAD")
+Submit=Button(root,text="Submit",font=("arial",18,"bold"), command=sel)
+back=Button(root,text="Back",font=("arial",18,"bold"), command=f8)
+
+name.configure(background="purple")
+voterid.configure(background="purple")
+radio1.configure(background="purple")
+radio2.configure(background="purple")
+radio3.configure(background="purple")
+
+name.place(x=50,y=100)
+name_entry.place(x=150,y=100)
+voterid.place(x=50,y=150)
+voterid_entry.place(x=150,y=150)
+radio1.place(x=180,y=200)
+radio2.place(x=180,y=250)
+radio3.place(x=180,y=300)
+Submit.place(x=180,y=370)
+back.place(x=180,y=440)
+
+root.withdraw()
+
 main_window.mainloop()
-
-
