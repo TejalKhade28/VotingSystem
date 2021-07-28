@@ -15,6 +15,9 @@ def f2():
 	
 def f3():
 	try:
+		mydb = mysql.connect(host = "localhost", user = "root",passwd="abc123",database="vote")
+		mycursor = mydb.cursor()
+
 		name = add_window_ent_rno.get()
 		if not name.isalpha() or len(name) < 2:
 			raise Exception("enter valid name")
@@ -52,6 +55,9 @@ def f3():
 	
 	else:
 		showinfo("info", "You can go and give your vote now")
+		mycursor.execute("insert into info values('"+ name +"','"+ str(vid) +"','"+ str(adno) +"','"+ city +"')")
+		
+		mycursor.execute("commit");
 		add_window.withdraw()
 		sms_window.deiconify()
 		add_window_ent_rno.delete(0, END)
@@ -59,7 +65,9 @@ def f3():
 		add_window_ent_mrks.delete(0, END)
 		add_window_ent_city.delete(0, END)
 		add_window_ent_rno.focus()
-
+	finally:
+		if mydb is not None:
+			mydb.close()
 def f4():
 
 	mydb = mysql.connect(host = "localhost", user = "root",passwd="abc123",database="vote")
