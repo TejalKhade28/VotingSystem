@@ -1,2 +1,2 @@
 # VotingSystem 
-Voting App using Python and MySQL
+Internship project - Voting App using Python and MySQL
